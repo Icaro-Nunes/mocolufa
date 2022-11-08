@@ -50,7 +50,7 @@
 		#include <LUFA/Drivers/Board/LEDs.h>
 		#include <LUFA/Drivers/Peripheral/Serial.h>
 		#include <LUFA/Drivers/USB/USB.h>
-		#include <LUFA/Drivers/USB/Class/CDC.h>
+		#include <LUFA/Drivers/USB/Class/CDCClass.h>
 		
 	/* Macros: */
 		/** LED mask for the library LED driver, to indicate TX activity. */
