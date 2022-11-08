@@ -89,18 +89,36 @@ static uchar tx_buf[TX_SIZE];
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
   .Config = {
     .ControlInterfaceNumber         = 0,
-      
-    .DataINEndpointNumber           = CDC_TX_EPNUM,
-    .DataINEndpointSize             = CDC_TXRX_EPSIZE,
-    .DataINEndpointDoubleBank       = false,
+    
+    .DataINEndpoint = {
+      .Address                      = CDC_TX_EPNUM,
+      .Size                         = CDC_TXRX_EPSIZE,
+      .Banks                        = 1
+    },
 
-    .DataOUTEndpointNumber          = CDC_RX_EPNUM,
-    .DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
-    .DataOUTEndpointDoubleBank      = false,
+    // .DataINEndpointNumber           = CDC_TX_EPNUM,
+    // .DataINEndpointSize             = CDC_TXRX_EPSIZE,
+    // .DataINEndpointDoubleBank       = false,
+
+    .DataOUTEndpoint = {
+      .Address                     = CDC_RX_EPNUM,
+      .Size                        = CDC_TXRX_EPSIZE,
+      .Banks                       = 1
+    },
+
+    // .DataOUTEndpointNumber          = CDC_RX_EPNUM,
+    // .DataOUTEndpointSize            = CDC_TXRX_EPSIZE,
+    // .DataOUTEndpointDoubleBank      = false,
       
-    .NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
-    .NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
-    .NotificationEndpointDoubleBank = false,
+    .NotificationEndpoint = {
+      .Address                     = CDC_NOTIFICATION_EPNUM,
+      .Size                        = CDC_NOTIFICATION_EPSIZE,
+      .Banks                       = 1
+    }
+    
+    // .NotificationEndpointNumber     = CDC_NOTIFICATION_EPNUM,
+    // .NotificationEndpointSize       = CDC_NOTIFICATION_EPSIZE,
+    // .NotificationEndpointDoubleBank = false,
   },
 };
 /* for MIDI */
@@ -108,13 +126,25 @@ USB_ClassInfo_MIDI_Device_t Keyboard_MIDI_Interface =  {
   .Config = {
     .StreamingInterfaceNumber = 1,
     
-    .DataINEndpointNumber      = MIDI_STREAM_IN_EPNUM,
-    .DataINEndpointSize        = MIDI_STREAM_EPSIZE,
-    .DataINEndpointDoubleBank  = false,
+    .DataINEndpoint = {
+      .Address                 = MIDI_STREAM_IN_EPNUM,
+      .Size                    = MIDI_STREAM_EPSIZE,
+      .Banks                   = 1,
+    },
+
+    // .DataINEndpointNumber      = MIDI_STREAM_IN_EPNUM,
+    // .DataINEndpointSize        = MIDI_STREAM_EPSIZE,
+    // .DataINEndpointDoubleBank  = false,
     
-    .DataOUTEndpointNumber     = MIDI_STREAM_OUT_EPNUM,
-    .DataOUTEndpointSize       = MIDI_STREAM_EPSIZE,
-    .DataOUTEndpointDoubleBank = false,
+    .DataOUTEndpoint = {
+      .Address                = MIDI_STREAM_OUT_EPNUM,
+      .Size                   = MIDI_STREAM_EPSIZE,
+      .Banks                  = 1,  
+    }
+    
+    // .DataOUTEndpointNumber     = MIDI_STREAM_OUT_EPNUM,
+    // .DataOUTEndpointSize       = MIDI_STREAM_EPSIZE,
+    // .DataOUTEndpointDoubleBank = false,
   },
 };
 
@@ -343,7 +373,7 @@ void processSerial(void) {
       
       /* Load the next byte from the USART transmit buffer into the USART */
       if (!(RingBuffer_IsEmpty(&USBtoUSART_Buffer))) {
-	Serial_TxByte(RingBuffer_Remove(&USBtoUSART_Buffer));
+	      Serial_SendByte(RingBuffer_Remove(&USBtoUSART_Buffer));
 	
 	LEDs_TurnOnLEDs(LEDMASK_RX);
 	PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;

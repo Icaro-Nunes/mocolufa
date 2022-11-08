@@ -58,8 +58,8 @@
 		#include <avr/pgmspace.h>
 
 		#include <LUFA/Drivers/USB/USB.h>
-		#include <LUFA/Drivers/USB/Class/CDC.h>
-		#include <LUFA/Drivers/USB/Class/MIDI.h>
+		#include <LUFA/Drivers/USB/Class/CDCClass.h>
+		#include <LUFA/Drivers/USB/Class/MIDIClass.h>
 		
 	/* Product-specific definitions: */
 		#define ARDUINO_UNO_PID			0x0001
@@ -95,9 +95,9 @@
 		{
 			USB_Descriptor_Configuration_Header_t    Config;
 			USB_Descriptor_Interface_t               CDC_CCI_Interface;
-			CDC_FUNCTIONAL_DESCRIPTOR(2)             CDC_Functional_IntHeader;
-			CDC_FUNCTIONAL_DESCRIPTOR(1)             CDC_Functional_AbstractControlManagement;
-			CDC_FUNCTIONAL_DESCRIPTOR(2)             CDC_Functional_Union;
+			USB_CDC_Descriptor_FunctionalHeader_t    CDC_Functional_IntHeader;
+			USB_CDC_Descriptor_FunctionalACM_t       CDC_Functional_AbstractControlManagement;
+			USB_CDC_Descriptor_FunctionalUnion_t     CDC_Functional_Union;
 			USB_Descriptor_Endpoint_t                CDC_NotificationEndpoint;
 			USB_Descriptor_Interface_t               CDC_DCI_Interface;
 			USB_Descriptor_Endpoint_t                CDC_DataOutEndpoint;
@@ -107,23 +107,23 @@
 	/* Type Defines for MIDI */
 		typedef struct
 		{
-			USB_Descriptor_Configuration_Header_t Config;
-			USB_Descriptor_Interface_t            Audio_ControlInterface;
-			USB_Audio_Interface_AC_t              Audio_ControlInterface_SPC;
-			USB_Descriptor_Interface_t            Audio_StreamInterface;
-			USB_MIDI_AudioInterface_AS_t          Audio_StreamInterface_SPC;
-			USB_MIDI_In_Jack_t                    MIDI_In_Jack_Emb;
-			USB_MIDI_In_Jack_t                    MIDI_In_Jack_Ext;
-			USB_MIDI_Out_Jack_t                   MIDI_Out_Jack_Emb;
-			USB_MIDI_Out_Jack_t                   MIDI_Out_Jack_Ext;
-			USB_Audio_StreamEndpoint_Std_t        MIDI_In_Jack_Endpoint;
-			USB_MIDI_Jack_Endpoint_t              MIDI_In_Jack_Endpoint_SPC;
-			USB_Audio_StreamEndpoint_Std_t        MIDI_Out_Jack_Endpoint;
-			USB_MIDI_Jack_Endpoint_t              MIDI_Out_Jack_Endpoint_SPC;
+			USB_Descriptor_Configuration_Header_t        Config;
+			USB_Descriptor_Interface_t                   Audio_ControlInterface;
+			USB_Audio_Descriptor_Interface_AC_t          Audio_ControlInterface_SPC;
+			USB_Descriptor_Interface_t                   Audio_StreamInterface;
+			USB_MIDI_Descriptor_AudioInterface_AS_t      Audio_StreamInterface_SPC;
+			USB_MIDI_Descriptor_InputJack_t              MIDI_In_Jack_Emb;
+			USB_MIDI_Descriptor_InputJack_t              MIDI_In_Jack_Ext;
+			USB_MIDI_Descriptor_OutputJack_t             MIDI_Out_Jack_Emb;
+			USB_MIDI_Descriptor_OutputJack_t             MIDI_Out_Jack_Ext;
+			USB_Audio_StdDescriptor_StreamEndpoint_Std_t MIDI_In_Jack_Endpoint;
+			USB_MIDI_Descriptor_Jack_Endpoint_t          MIDI_In_Jack_Endpoint_SPC;
+			USB_Audio_StdDescriptor_StreamEndpoint_Std_t MIDI_Out_Jack_Endpoint;
+			USB_MIDI_Descriptor_Jack_Endpoint_t          MIDI_Out_Jack_Endpoint_SPC;
 		} USB_Descriptor_ConfigurationMIDI_t;
 		
 	/* Function Prototypes: */
-		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
-		                                    const uint8_t wIndex,
-		                                    void** const DescriptorAddress) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+		// uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
+		//                                     const uint8_t wIndex,
+		//                                     const void** const DescriptorAddress) ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
 #endif
