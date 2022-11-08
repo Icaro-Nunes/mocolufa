@@ -1,4 +1,12 @@
 /*
+	Firmware to set the atmega16u2 on
+	arduino UNO R3 as dual configurable,
+	as serial interface for arduino and
+	also as USB Audio Device interface
+	
+	based on dualMocoLUFA 2013/09/22
+*/
+/*
      dualMocoLUFA Project
      Copyright (C) 2013 by morecat_lab
 
@@ -10,24 +18,24 @@
 */
 /*
              LUFA Library
-     Copyright (C) Dean Camera, 2010.
-              
+     Copyright (C) Dean Camera, 2021.
+
   dean [at] fourwalledcubicle [dot] com
-      www.fourwalledcubicle.com
+           www.lufa-lib.org
 */
 /*
-  Copyright 2010  Dean Camera (dean [at] fourwalledcubicle [dot] com)
+  Copyright 2021  Dean Camera (dean [at] fourwalledcubicle [dot] com)
 
-  Permission to use, copy, modify, distribute, and sell this 
+  Permission to use, copy, modify, distribute, and sell this
   software and its documentation for any purpose is hereby granted
-  without fee, provided that the above copyright notice appear in 
+  without fee, provided that the above copyright notice appear in
   all copies and that both that the copyright notice and this
-  permission notice and warranty disclaimer appear in supporting 
-  documentation, and that the name of the author not be used in 
-  advertising or publicity pertaining to distribution of the 
+  permission notice and warranty disclaimer appear in supporting
+  documentation, and that the name of the author not be used in
+  advertising or publicity pertaining to distribution of the
   software without specific, written prior permission.
 
-  The author disclaim all warranties with regard to this
+  The author disclaims all warranties with regard to this
   software, including all implied warranties of merchantability
   and fitness.  In no event shall the author be liable for any
   special, indirect or consequential damages or any damages
