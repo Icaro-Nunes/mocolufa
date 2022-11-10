@@ -1,0 +1,55 @@
+-I/usr/lib/avr/include/
+-I/home/icaro-nunes/Documentos/lib-foldr/lufa-LUFA-210130/
+
+
+-pipe
+-gdwarf-2
+-g2
+-mmcu=atmega16u2
+-fshort-enums
+-fno-inline-small-functions
+-Wall
+-fno-strict-aliasing
+-funsigned-char
+-funsigned-bitfields
+-ffunction-sections
+-I.
+-DARCH=ARCH_AVR8
+-DDMBS_ARCH_AVR8
+-mrelax
+-fno-jump-tables
+
+-Os
+-std=gnu99
+-Wstrict-prototypes
+-DF_CPU=16000000UL
+-IConfig/
+-DF_CPU=16000000UL
+
+-DF_CLOCK=UL
+
+-DARDUINO_MODEL_PID=0x0001
+-DARDUINO_VID=0x2341
+-DBOARD=BOARD_UNO
+
+-D USB_DEVICE_ONLY
+-D FIXED_CONTROL_ENDPOINT_SIZE=8
+-D FIXED_NUM_CONFIGURATIONS=1
+-D USE_FLASH_DESCRIPTORS
+-D INTERRUPT_CONTROL_ENDPOINT
+-D DEVICE_STATE_AS_GPIOR=0
+-D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
+-DAVR_RESET_LINE_PORT="PORTD"
+-DAVR_RESET_LINE_DDR="DDRD"
+-DAVR_RESET_LINE_MASK="(1 << 7)"
+-DTX_RX_LED_PULSE_MS=3
+-DPING_PONG_LED_PULSE_MS=100
+
+-I.
+-I../../LUFA/..
+-DARCH=ARCH_AVR8
+-DBOARD=BOARD_UNO
+-DF_USB=16000000UL
+-MMD
+-MP
+-MF
