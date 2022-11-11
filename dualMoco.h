@@ -93,7 +93,7 @@
 	/* Function Prototypes: */
 		void SetupHardware(void);
 		void processSerial(void);
-		void processMIDI(void);
+		void processAUDIO(void);
 
 		void EVENT_USB_Device_Connect(void);
 		void EVENT_USB_Device_Disconnect(void);
@@ -103,9 +103,8 @@
 		void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 		void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);		
 
-		uchar parseSerialMidiMessage(uchar);
-		void parseUSBMidiMessage(uchar *, uchar);
+		// void parseUSBAUDIOMessage(uchar *, uchar);
 	/* shared variable */
 		extern uchar mocoMode;
-
+		
 #endif /* _DUAL_MOCO_H_ */

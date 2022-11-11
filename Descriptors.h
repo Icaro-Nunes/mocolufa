@@ -78,14 +78,11 @@
 		/** Size in bytes of the CDC data IN and OUT endpoints. */
 		#define CDC_TXRX_EPSIZE                64	
 
-	/* Macros for MIDI */
-		/** Endpoint number of the MIDI streaming data IN endpoint, for device-to-host data transfers. */
-		#define MIDI_STREAM_IN_EPNUM        2
-		/** Endpoint number of the MIDI streaming data OUT endpoint, for host-to-device data transfers. */
-		#define MIDI_STREAM_OUT_EPNUM       1
-		/** Endpoint size in bytes of the Audio isochronous streaming data IN and OUT endpoints. */
-		#define MIDI_STREAM_EPSIZE          64
-		
+	/* Macros for AUDIO */
+		#define AUDIO_ENDPOINT_NUMBER          1
+		#define AUDIO_ENDPOINT_ADDRESS         (ENDPOINT_DIR_OUT | AUDIO_ENDPOINT_NUMBER)
+		#define AUDIO_ENDPOINT_SIZE            8
+
 	/* Type Defines for CDC */
 		/** Type define for the device configuration descriptor structure. This must be defined in the
 		 *  application code, as the configuration descriptor contains several sub-descriptors which
@@ -104,23 +101,16 @@
 			USB_Descriptor_Endpoint_t                CDC_DataInEndpoint;
 		} USB_Descriptor_ConfigurationCDC_t;
 
-	/* Type Defines for MIDI */
+	/* Type Defines for AUDIO */
 		typedef struct
 		{
 			USB_Descriptor_Configuration_Header_t        Config;
 			USB_Descriptor_Interface_t                   Audio_ControlInterface;
 			USB_Audio_Descriptor_Interface_AC_t          Audio_ControlInterface_SPC;
 			USB_Descriptor_Interface_t                   Audio_StreamInterface;
-			USB_MIDI_Descriptor_AudioInterface_AS_t      Audio_StreamInterface_SPC;
-			USB_MIDI_Descriptor_InputJack_t              MIDI_In_Jack_Emb;
-			USB_MIDI_Descriptor_InputJack_t              MIDI_In_Jack_Ext;
-			USB_MIDI_Descriptor_OutputJack_t             MIDI_Out_Jack_Emb;
-			USB_MIDI_Descriptor_OutputJack_t             MIDI_Out_Jack_Ext;
-			USB_Audio_StdDescriptor_StreamEndpoint_Std_t MIDI_In_Jack_Endpoint;
-			USB_MIDI_Descriptor_Jack_Endpoint_t          MIDI_In_Jack_Endpoint_SPC;
-			USB_Audio_StdDescriptor_StreamEndpoint_Std_t MIDI_Out_Jack_Endpoint;
-			USB_MIDI_Descriptor_Jack_Endpoint_t          MIDI_Out_Jack_Endpoint_SPC;
-		} USB_Descriptor_ConfigurationMIDI_t;
+			USB_Audio_Descriptor_Interface_AS_t          Audio_StreamInterface_SPC;
+			USB_Audio_Descriptor_StreamEndpoint_Std_t    Audio_Endpoint;
+		} USB_Descriptor_ConfigurationAUDIO_t;
 		
 	/* Function Prototypes: */
 		// uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
