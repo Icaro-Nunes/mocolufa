@@ -1,6 +1,5 @@
 obj/*
 *.bin
-*.hex
 *.eep
 *.elf
 *.lss
