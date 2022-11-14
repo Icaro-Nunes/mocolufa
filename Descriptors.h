@@ -104,12 +104,22 @@
 	/* Type Defines for AUDIO */
 		typedef struct
 		{
+			// General Configuration Descriptor
 			USB_Descriptor_Configuration_Header_t        Config;
+
+			// Audio Control Interface
 			USB_Descriptor_Interface_t                   Audio_ControlInterface;
 			USB_Audio_Descriptor_Interface_AC_t          Audio_ControlInterface_SPC;
+			USB_Audio_Descriptor_InputTerminal_t         Input_Terminal;
+			USB_Audio_Descriptor_OutputTerminal_t        Output_Terminal;
+
+			// Audio Streaming Interface
 			USB_Descriptor_Interface_t                   Audio_StreamInterface;
 			USB_Audio_Descriptor_Interface_AS_t          Audio_StreamInterface_SPC;
+			USB_Audio_Descriptor_Format_t                Audio_Format;
+			USB_Audio_SampleFreq_t                       Sample_Freq;
 			USB_Audio_Descriptor_StreamEndpoint_Std_t    Audio_Endpoint;
+			USB_Audio_Descriptor_StreamEndpoint_Spc_t    Audio_Endpoint_SPC;
 		} USB_Descriptor_ConfigurationAUDIO_t;
 		
 	/* Function Prototypes: */

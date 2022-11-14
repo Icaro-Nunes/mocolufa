@@ -231,6 +231,9 @@ const USB_Descriptor_ConfigurationCDC_t PROGMEM ConfigurationDescriptorSerial =
 		}
 };
 
+#define AC_CLASS_SPECIFIC_DESCRIPTOR_SIZE sizeof(USB_Audio_Descriptor_Interface_AC_t) + sizeof(USB_Audio_Descriptor_InputTerminal_t) + sizeof(USB_Audio_Descriptor_OutputTerminal_t)
+
+
 /* for AUDIO */
 const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 {
@@ -253,7 +256,7 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 		{
 			.Header                   = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
 
-			.InterfaceNumber          = 0,
+			.InterfaceNumber          = 0x00,
 			.AlternateSetting         = 0,
 			
 			.TotalEndpoints           = 0,
@@ -271,20 +274,44 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 			.Subtype                  = AUDIO_DSUBTYPE_CSInterface_Header,
 			
 			.ACSpecification          = VERSION_BCD(01, 00, 0),
-			.TotalLength              = sizeof(USB_Audio_Descriptor_Interface_AC_t),
+			.TotalLength              = AC_CLASS_SPECIFIC_DESCRIPTOR_SIZE,
 			
 			.InCollection             = 1,
 			.InterfaceNumber          = 1,
 		},
+	
+	.Input_Terminal = 
+		{
+			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_InputTerminal_t), .Type = AUDIO_DTYPE_CSInterface},
+			.Subtype                  = AUDIO_DSUBTYPE_CSInterface_InputTerminal,
+			.TerminalID               = 0x01,
+			.TerminalType             = AUDIO_TERMINAL_STREAMING,
+			.AssociatedOutputTerminal = 0x00,
+			.TotalChannels            = 1,
+			.ChannelConfig            = 0x00,
+			.ChannelStrIndex          = 0x00,
+			.TerminalStrIndex         = 0x00
+		},
+
+	.Output_Terminal = 
+		{
+			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_OutputTerminal_t), .Type = AUDIO_DTYPE_CSInterface},
+			.Subtype                  = AUDIO_DSUBTYPE_CSInterface_OutputTerminal,
+			.TerminalID               = 0x02,
+			.TerminalType             = AUDIO_TERMINAL_OUT_SPEAKER,
+			.AssociatedInputTerminal  = 0x00,
+			.SourceID                 = 0x01,
+			.TerminalStrIndex         = 0x00
+		},
 
 	.Audio_StreamInterface = 
 		{
-			.Header                   = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = AUDIO_DTYPE_CSInterface},
+			.Header                   = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
 
-			.InterfaceNumber          = 1,
+			.InterfaceNumber          = 0x01,
 			.AlternateSetting         = 0,
 			
-			.TotalEndpoints           = 2,
+			.TotalEndpoints           = 1,
 				
 			.Class                    = 0x01,
 			.SubClass                 = 0x02,
@@ -298,24 +325,48 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_Interface_AS_t), .Type = AUDIO_DTYPE_CSInterface},
 			.Subtype                  = AUDIO_DSUBTYPE_CSInterface_General,
 
-			.TerminalLink             = 0,
+			.TerminalLink             = 0x01,
 			
-			.FrameDelay               = 0,
+			.FrameDelay               = 1,
 			.AudioFormat              = 0x01
 		},
+	
+	.Audio_Format = 
+		{
+			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_Format_t) + sizeof(USB_Audio_SampleFreq_t), .Type = AUDIO_DTYPE_CSInterface},
+			.Subtype                  = AUDIO_DSUBTYPE_CSInterface_FormatType,
+			.FormatType               = 0x01,
+			.Channels                 = 1,
+			.SubFrameSize             = 1,
+			.BitResolution            = 0x08,
+			.TotalDiscreteSampleRates = 1
+		},
+
+	.Sample_Freq = AUDIO_SAMPLE_FREQ(8000),
 
 	.Audio_Endpoint = 
 		{
 			.Endpoint                 = 
 				{
 					.Header           = {.Size = sizeof(USB_Audio_Descriptor_StreamEndpoint_Std_t), .Type = DTYPE_Endpoint},
-					.EndpointSize     = 8,
 					.EndpointAddress  = AUDIO_ENDPOINT_ADDRESS,
 					.Attributes       = (ENDPOINT_ATTR_NO_SYNC | EP_TYPE_ISOCHRONOUS),
+					.EndpointSize     = 1,
 					.PollingIntervalMS= 1
 				},
-			.Refresh                  = 0
+			.Refresh                  = 0,
+			.SyncEndpointNumber       = 0
+		},
+
+	.Audio_Endpoint_SPC = 
+		{
+			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_StreamEndpoint_Spc_t), .Type = AUDIO_DTYPE_CSEndpoint},
+			.Subtype                  = AUDIO_DSUBTYPE_CSEndpoint_General,
+			.Attributes               = 0x00,
+			.LockDelayUnits           = 0x00,
+			.LockDelay                = 0x0000,
 		}
+	
 	
 };
 
