@@ -131,7 +131,7 @@ USB_ClassInfo_Audio_Device_t Audio_Interface = {
     .DataOUTEndpoint = {
       .Address                = AUDIO_ENDPOINT_ADDRESS,
       .Banks                  = 1,
-      .Size                   = AUDIO_ENDPOINT_SIZE
+      .Size                   = 1
     }
   }
 };
@@ -199,6 +199,7 @@ void processAUDIO() {
     if(Audio_Device_IsSampleReceived(&Audio_Interface)){
       sample = Audio_Device_ReadSample8(&Audio_Interface);
       tx_buf[uwptr++] = sample;
+      uwptr &= TX_MASK;
       LEDs_TurnOnLEDs(LEDMASK_RX);
       PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;
     }
