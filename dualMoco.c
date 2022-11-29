@@ -54,7 +54,9 @@
 #include "dualMoco.h"
 #include "Arduino-usbserial.h"
 #include "Descriptors.h"
+#include "LUFA/Common/Common.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 uchar mocoMode = 1;	/* 0: Serial , 1: MIDI */
 uchar highSpeed = 0;		/* 0: normal speed(31250bps),
@@ -182,55 +184,22 @@ void processAUDIO() {
 #define CNTMAX 40
   static uint8_t cnt = CNTMAX;
 
+  // GlobalInterruptEnable();
+
   sei();
 
   int8_t sample = 0;
+  
+  #define COUNT_MAX 16000000
+  uint32_t count = COUNT_MAX;
   for (;;){
-    
-    // USB_Audio_SampleFreq_t sample;
-    // while (MIDI_Device_ReceiveEventPacket(&Keyboard_MIDI_Interface, &ReceivedMIDIEvent)) {
-    //   /* for each MIDI packet w/ 4 bytes */
-    //   parseUSBMidiMessage((uchar *)&ReceivedMIDIEvent, 4);
-    //   LEDs_TurnOnLEDs(LEDMASK_RX);
-    //   PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;
-    // }
-    
-    /* receive from USB AUDIO */
-    if(Audio_Device_IsSampleReceived(&Audio_Interface)){
-      sample = Audio_Device_ReadSample8(&Audio_Interface);
-      tx_buf[uwptr++] = sample;
-      uwptr &= TX_MASK;
-      LEDs_TurnOnLEDs(LEDMASK_RX);
-      PulseMSRemaining.RxLEDPulse = TX_RX_LED_PULSE_MS;
+    if(count == 0){
+      count = COUNT_MAX;
+      LEDs_ToggleLEDs(
+        (LEDMASK_RX | LEDMASK_TX)
+      );
     }
-
-    /* send to Serial AUDIO line  */
-    if( (UCSR1A & (1<<UDRE1)) && uwptr!=irptr ) {
-      UDR1 = tx_buf[irptr++];
-      irptr &= TX_MASK;
-    }
-    
-    if (TIFR0 & (1 << TOV0)) {
-      TIFR0 |= (1 << TOV0);
-      /* Turn off TX LED(s) once the TX pulse period has elapsed */
-      if (PulseMSRemaining.TxLEDPulse && !(--PulseMSRemaining.TxLEDPulse))
-	LEDs_TurnOffLEDs(LEDMASK_TX);
-      
-      /* Turn off RX LED(s) once the RX pulse period has elapsed */
-      if (PulseMSRemaining.RxLEDPulse && !(--PulseMSRemaining.RxLEDPulse))
-	LEDs_TurnOffLEDs(LEDMASK_RX);
-    }
-
-    Audio_Device_USBTask(&Audio_Interface);
-    USB_USBTask();
-
-    if (highSpeed == 1) {
-      cnt--;
-      if (cnt == 0) {
-	cnt = CNTMAX;
-	PORTB ^= 0x02;
-      }
-    }
+    count--;
   } /* for */
 }
 
