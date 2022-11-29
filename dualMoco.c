@@ -190,14 +190,23 @@ void processAUDIO() {
 
   int8_t sample = 0;
   
-  #define COUNT_MAX 16000000
+  #define COUNT_MAX 800000
   uint32_t count = COUNT_MAX;
+
+  uint8_t state = 0;
+
   for (;;){
     if(count == 0){
       count = COUNT_MAX;
-      LEDs_ToggleLEDs(
-        (LEDMASK_RX | LEDMASK_TX)
-      );
+      state = state ^ 0x01;
+      if(!state)
+        LEDs_TurnOffLEDs(
+          (LEDMASK_RX | LEDMASK_TX)
+        );
+      else
+        LEDs_TurnOnLEDs(
+          (LEDMASK_RX | LEDMASK_TX)
+        );
     }
     count--;
   } /* for */
