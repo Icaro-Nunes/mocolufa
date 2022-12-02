@@ -114,6 +114,7 @@
 			USB_Audio_Descriptor_OutputTerminal_t        Output_Terminal;
 
 			// Audio Streaming Interface
+			USB_Descriptor_Interface_t                   Audio_StreamInterface_Alt0;
 			USB_Descriptor_Interface_t                   Audio_StreamInterface;
 			USB_Audio_Descriptor_Interface_AS_t          Audio_StreamInterface_SPC;
 			USB_Audio_Descriptor_Format_t                Audio_Format;

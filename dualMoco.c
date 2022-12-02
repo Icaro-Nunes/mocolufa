@@ -55,6 +55,7 @@
 #include "Arduino-usbserial.h"
 #include "Descriptors.h"
 #include "LUFA/Common/Common.h"
+#include <avr/interrupt.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -128,6 +129,7 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
 /* for AUDIO */
 USB_ClassInfo_Audio_Device_t Audio_Interface = {
   .Config = {
+    .ControlInterfaceNumber   = 0,
     .StreamingInterfaceNumber = 1,
     
     .DataOUTEndpoint = {
@@ -166,6 +168,24 @@ USB_ClassInfo_Audio_Device_t Audio_Interface = {
 //   }
 // }
 
+void turnOnRxTxLEDs(){
+  LEDs_TurnOnLEDs(
+    (LEDMASK_RX | LEDMASK_TX)
+  );
+}
+
+void turnOffRxTxLEDs(){
+  LEDs_TurnOffLEDs(
+    (LEDMASK_RX | LEDMASK_TX)
+  );
+}
+
+void toggleRxTxLEDs(){
+  LEDs_ToggleLEDs(
+    (LEDMASK_RX | LEDMASK_TX)
+  );
+}
+
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
  */
@@ -184,31 +204,38 @@ void processAUDIO() {
 #define CNTMAX 40
   static uint8_t cnt = CNTMAX;
 
-  // GlobalInterruptEnable();
+  GlobalInterruptEnable();
 
   sei();
 
   int8_t sample = 0;
-  
-  #define COUNT_MAX 800000
-  uint32_t count = COUNT_MAX;
-
+  int8_t last_sample = 0;
   uint8_t state = 0;
 
   for (;;){
-    if(count == 0){
-      count = COUNT_MAX;
-      state = state ^ 0x01;
-      if(!state)
-        LEDs_TurnOffLEDs(
-          (LEDMASK_RX | LEDMASK_TX)
-        );
-      else
-        LEDs_TurnOnLEDs(
-          (LEDMASK_RX | LEDMASK_TX)
-        );
+    uint8_t endp = Endpoint_GetCurrentEndpoint();
+    
+    if(Audio_Device_IsSampleReceived(&Audio_Interface)){
+      sample = Audio_Device_ReadSample8(&Audio_Interface);
+      switch (state) {
+        case 0:
+          if(sample > last_sample){
+            turnOnRxTxLEDs();
+            state = 1;
+          }
+          break;
+        case 1:
+          if(sample < last_sample){
+            turnOffRxTxLEDs();
+            state = 0;
+          }
+          break;
+      }
     }
-    count--;
+
+    Audio_Device_USBTask(&Audio_Interface);
+    USB_USBTask();
+    Endpoint_SelectEndpoint(endp);
   } /* for */
 }
 
@@ -276,6 +303,8 @@ void SetupHardware(void) {
   MCUSR &= ~(1 << WDRF);
   wdt_disable();
 
+  LEDs_Init();
+
   /* PB1 = LED, PB2 = (MIDI/SERIAL), PB3 (NORMAL/HIGH) */
   DDRB = 0x02;		/* PB1 = OUTPUT, PB2 = INPUT, PB3 = INPUT */
   PORTB = 0x0C;		/* PULL-UP PB2, PB3 */
@@ -301,7 +330,6 @@ void SetupHardware(void) {
   
   /* Hardware Initialization */
   USB_Init();
-  LEDs_Init();
 
   if (mocoMode == 0) {
     /* Pull target /RESET line high */
@@ -312,6 +340,7 @@ void SetupHardware(void) {
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void) {
+  
 }
 
 /** Event handler for the library USB Disconnection event. */
@@ -436,5 +465,5 @@ bool CALLBACK_Audio_Device_GetSetEndpointProperty(USB_ClassInfo_Audio_Device_t* 
 			                                                  uint16_t* const DataLength,
 			                                                  uint8_t* Data)
 {
-  return true;
+  return false;
 }

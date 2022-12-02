@@ -103,14 +103,14 @@ const USB_Descriptor_Device_t PROGMEM DeviceDescriptorAUDIO =
 	.Header                 = {.Size = sizeof(USB_Descriptor_Device_t), .Type = DTYPE_Device},
 		
 	.USBSpecification       = VERSION_BCD(1, 10, 0),
-	.Class                  = 0x00,
-	.SubClass               = 0x00,
-	.Protocol               = 0x00,
+	.Class                  = USB_CSCP_NoDeviceClass,
+	.SubClass               = USB_CSCP_NoDeviceSubclass,
+	.Protocol               = USB_CSCP_NoDeviceProtocol,
 				
 	.Endpoint0Size          = FIXED_CONTROL_ENDPOINT_SIZE,
 		
 	.VendorID               = 0x03EB, // Atmel
-	.ProductID              = 0x2048, // LUFA USB-MIDI Demo application
+	.ProductID              = 0x2046, // LUFA USB-MIDI Demo application
 	.ReleaseNumber          = 0x0000,
 		
 	.ManufacturerStrIndex   = 0x01,
@@ -304,12 +304,27 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 			.TerminalStrIndex         = 0x00
 		},
 
+	.Audio_StreamInterface_Alt0 = {
+		.Header                   = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
+
+		.InterfaceNumber          = 0x01,
+		.AlternateSetting         = 0,
+		
+		.TotalEndpoints           = 0,
+			
+		.Class                    = 0x01,
+		.SubClass                 = 0x02,
+		.Protocol                 = 0x00,
+			
+		.InterfaceStrIndex        = NO_DESCRIPTOR
+	},
+
 	.Audio_StreamInterface = 
 		{
 			.Header                   = {.Size = sizeof(USB_Descriptor_Interface_t), .Type = DTYPE_Interface},
 
 			.InterfaceNumber          = 0x01,
-			.AlternateSetting         = 0,
+			.AlternateSetting         = 1,
 			
 			.TotalEndpoints           = 1,
 				
@@ -362,7 +377,7 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 		{
 			.Header                   = {.Size = sizeof(USB_Audio_Descriptor_StreamEndpoint_Spc_t), .Type = AUDIO_DTYPE_CSEndpoint},
 			.Subtype                  = AUDIO_DSUBTYPE_CSEndpoint_General,
-			.Attributes               = 0x00,
+			.Attributes               = (AUDIO_EP_FULL_PACKETS_ONLY),
 			.LockDelayUnits           = 0x00,
 			.LockDelay                = 0x0000,
 		}
