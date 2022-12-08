@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Make",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "command": "/bin/make"
+        },
+        {
+            "label": "Make and Upload",
+            //"icon": {"id": "arrow-right", "color": "terminal.ansiCyan"},
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": "Make",
+            "command": "/bin/bash",
+            "args": [
+                "program.sh"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
