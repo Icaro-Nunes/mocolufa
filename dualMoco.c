@@ -86,6 +86,8 @@ static uchar utx_buf[RX_SIZE];	/* BULK_IN buffer */
 static uchar uwptr = 0, irptr = 0;
 static uchar tx_buf[TX_SIZE];
 
+int8_t sample;
+
 /** LUFA CDC Class driver interface configuration and state information. This structure is
  *  passed to all CDC Class driver functions, so that multiple instances of the same class
  *  within a device can be differentiated from one another.
@@ -186,6 +188,24 @@ void toggleRxTxLEDs(){
   );
 }
 
+void turnOnTxLED(){
+  LEDs_TurnOnLEDs(
+    (LEDMASK_TX)
+  );
+}
+
+void turnOffTxLED(){
+  LEDs_TurnOffLEDs(
+    (LEDMASK_TX)
+  );
+}
+
+void toggleTxLED(){
+  LEDs_ToggleLEDs(
+    (LEDMASK_TX)
+  );
+}
+
 /** Main program entry point. This routine contains the overall program flow, including initial
  *  setup of all components and the main program loop.
  */
@@ -208,28 +228,25 @@ void processAUDIO() {
 
   sei();
 
-  int8_t sample = 0;
+  sample = 0;
   int8_t last_sample = 0;
   uint8_t state = 0;
 
   for (;;){
     uint8_t endp = Endpoint_GetCurrentEndpoint();
-    
+    uint32_t cnt = 0;
+
     if(Audio_Device_IsSampleReceived(&Audio_Interface)){
+      if(cnt > 2000)
+        break;
+      
+      last_sample = sample;
       sample = Audio_Device_ReadSample8(&Audio_Interface);
-      switch (state) {
-        case 0:
-          if(sample > last_sample){
-            turnOnRxTxLEDs();
-            state = 1;
-          }
-          break;
-        case 1:
-          if(sample < last_sample){
-            turnOffRxTxLEDs();
-            state = 0;
-          }
-          break;
+      turnOffTxLED();
+      if(sample != last_sample){
+        Serial_SendByte(sample);
+        turnOnTxLED();
+        cnt++;
       }
     }
 
@@ -237,6 +254,10 @@ void processAUDIO() {
     USB_USBTask();
     Endpoint_SelectEndpoint(endp);
   } /* for */
+
+  for(long int i = 0; i < 100000; i++);
+  Serial_SendByte(13);
+
 }
 
 
@@ -314,19 +335,20 @@ void SetupHardware(void) {
     Serial_Init(9600, false);
   } else {		/* Moco mode */
     mocoMode = 1;
-    if ((PINB & 0x08) == 0) { /* high speed mode */
-      highSpeed = 1;
-      // UBRR1L = 1;		/* 500K at 16MHz clock */
-      UBRR1L = 0;		/* 1M at 16MHz clock */
-    } else {
-      UBRR1L = 31;	/* 31250Hz at 16MHz clock */
-    }
-    UCSR1B = (1<<RXEN1) | (1<<TXEN1);
-    PORTB = 0x0E;	       /* PORTB1 = HIGH */
+    // if ((PINB & 0x08) == 0) { /* high speed mode */
+    //   highSpeed = 1;
+    //   // UBRR1L = 1;		/* 500K at 16MHz clock */
+    //   UBRR1L = 0;		/* 1M at 16MHz clock */
+    // } else {
+    //   UBRR1L = 31;	/* 31250Hz at 16MHz clock */
+    // }
+    // UCSR1B = (1<<RXEN1) | (1<<TXEN1);
+    // PORTB = 0x0E;	       /* PORTB1 = HIGH */
+    Serial_Init(9600, false);
   }
 
-  /* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
-  TCCR0B = (1 << CS02);
+  // /* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
+  // TCCR0B = (1 << CS02);
   
   /* Hardware Initialization */
   USB_Init();
