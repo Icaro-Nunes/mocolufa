@@ -222,7 +222,7 @@ int main(void) {
 
 void processAUDIO() {
 #define CNTMAX 40
-  static uint8_t cnt = CNTMAX;
+  // static uint8_t cnt = CNTMAX;
 
   GlobalInterruptEnable();
 
@@ -230,23 +230,20 @@ void processAUDIO() {
 
   sample = 0;
   int8_t last_sample = 0;
-  uint8_t state = 0;
 
   for (;;){
     uint8_t endp = Endpoint_GetCurrentEndpoint();
-    uint32_t cnt = 0;
 
     if(Audio_Device_IsSampleReceived(&Audio_Interface)){
-      if(cnt > 2000)
-        break;
-      
       last_sample = sample;
+
       sample = Audio_Device_ReadSample8(&Audio_Interface);
+
       turnOffTxLED();
+      
       if(sample != last_sample){
         Serial_SendByte(sample);
         turnOnTxLED();
-        cnt++;
       }
     }
 
@@ -254,9 +251,6 @@ void processAUDIO() {
     USB_USBTask();
     Endpoint_SelectEndpoint(endp);
   } /* for */
-
-  for(long int i = 0; i < 100000; i++);
-  Serial_SendByte(13);
 
 }
 
@@ -344,7 +338,7 @@ void SetupHardware(void) {
     // }
     // UCSR1B = (1<<RXEN1) | (1<<TXEN1);
     // PORTB = 0x0E;	       /* PORTB1 = HIGH */
-    Serial_Init(9600, false);
+    Serial_Init(19200, false);
   }
 
   // /* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
