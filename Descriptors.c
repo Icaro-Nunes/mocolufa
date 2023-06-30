@@ -357,7 +357,7 @@ const USB_Descriptor_ConfigurationAUDIO_t PROGMEM ConfigurationDescriptorAUDIO =
 			.TotalDiscreteSampleRates = 1
 		},
 
-	.Sample_Freq = AUDIO_SAMPLE_FREQ(8000),
+	.Sample_Freq = AUDIO_SAMPLE_FREQ(22050),
 
 	.Audio_Endpoint = 
 		{

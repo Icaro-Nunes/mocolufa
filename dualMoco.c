@@ -222,36 +222,44 @@ int main(void) {
 
 void processAUDIO() {
 #define CNTMAX 40
-  // static uint8_t cnt = CNTMAX;
+  static uint8_t cnt = CNTMAX;
 
   GlobalInterruptEnable();
 
   sei();
 
-  sample = 0;
+  int8_t sample = 0;
   int8_t last_sample = 0;
+  uint8_t state = 0;
 
   for (;;){
-    uint8_t endp = Endpoint_GetCurrentEndpoint();
-
+    
     if(Audio_Device_IsSampleReceived(&Audio_Interface)){
-      last_sample = sample;
-
       sample = Audio_Device_ReadSample8(&Audio_Interface);
-
-      turnOffTxLED();
-      
-      if(sample != last_sample){
-        Serial_SendByte(sample);
-        turnOnTxLED();
+      switch (state) {
+        case 0:
+          if(sample > last_sample){
+            turnOnRxTxLEDs();
+            state = 1;
+          }
+          break;
+        case 1:
+          if(sample < last_sample){
+            turnOffRxTxLEDs();
+            state = 0;
+          }
+          break;
       }
     }
 
-    Audio_Device_USBTask(&Audio_Interface);
-    USB_USBTask();
-    Endpoint_SelectEndpoint(endp);
-  } /* for */
+    if(cnt == 0){
+      Audio_Device_USBTask(&Audio_Interface);
+      USB_USBTask();
+    }
 
+    cnt++;
+    // Endpoint_SelectEndpoint(endp);
+  } /* for */
 }
 
 
@@ -326,7 +334,7 @@ void SetupHardware(void) {
 
   if ((PINB & 0x04) == 0) { /* Arduino-serial (JUMPER BTW PB2-GND) */
     mocoMode = 0;
-    Serial_Init(9600, false);
+    // Serial_Init(9600, false);
   } else {		/* Moco mode */
     mocoMode = 1;
     // if ((PINB & 0x08) == 0) { /* high speed mode */
@@ -338,8 +346,10 @@ void SetupHardware(void) {
     // }
     // UCSR1B = (1<<RXEN1) | (1<<TXEN1);
     // PORTB = 0x0E;	       /* PORTB1 = HIGH */
-    Serial_Init(19200, false);
+    // Serial_Init(19200, false);
   }
+  Serial_Init(19200, false);
+
 
   // /* Start the flush timer so that overflows occur rapidly to push received bytes to the USB interface */
   // TCCR0B = (1 << CS02);
